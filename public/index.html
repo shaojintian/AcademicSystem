@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        .hide {
+            display: none;
+        }
+
+        main {
+            padding-left: 300px;
+        }
+
+        .mycontainer {
+            width: 95%;
+        }
+
+        .control {
+            margin-top: -5px;
+        }
+
+        .mylabel {
+            display: inline-block;
+            width: 100px;
+            border-right: 2px solid grey;
+        }
+
+        .mycontent {
+            font-size: 1rem;
+            padding-left: 2rem;
+        }
+
+        .lesson-name {
+            display: inline-block;
+            width: 160px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .lesson-score {
+            padding-left: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .mybtn {
+            margin-top: -5px;
+        }
+
+        .t-s-name {
+            font-size: 1.2rem !important;
+            display: inline-block !important;
+            width: 10rem !important;
+            text-align: left !important;
+        }
+
+        .t-s-score {
+            font-size: 1.2rem !important;
+            display: inline-block !important;
+            width: 5rem !important;
+            text-align: center !important;
+        }
+
+        .t-s-input {
+            width: 3rem !important;
+            margin-top: -5px !important;
+            height: 2rem !important;
+            text-align: center !important;
+            margin-right: 1rem !important;
+        }
+
+        .t-s .t-s-input {
+            display: none;
+        }
+
+        .t-s:hover .t-s-input {
+            display: inline-block;
+        }
+
+        .t-s .t-s-btn {
+            display: none;
+        }
+
+        .t-s:hover .t-s-btn {
+            display: inline-block;
+        }
+
+        .t-s-btn {
+            height: 30px;
+            line-height: 30px;
+        }
+
+        .modal-trigger {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+        }
+    </style>
+</head>
+
+<body class='teal lighten-2'>
+    <div id="app">
+        <div id="login-box" class="sprite container scale-transition scale-out">
+            <div class="section"></div>
+            <div class="section"></div>
+            <div class="row">
+                <div class="col s6 offset-s3 card grey lighten-4 z-depth-4">
+                    <div class="card-content">
+
+                        <h4 class="teal-text text-darken-1 center">登录教务系统</h4>
+                        <ul class="tabs">
+                            <li class="tab col s6">
+                                <a class="active" href="#tab1">学生</a>
+                            </li>
+                            <li class="tab col s6">
+                                <a href="#tab2">教师</a>
+                            </li>
+                        </ul>
+                        <div id="tab1" class="col s12">
+                            <div class="input-field">
+                                <input id="stu-account" type="text">
+                                <label for="stu-account">学号</label>
+
+                            </div>
+                            <div class="input-field">
+                                <input id="stu-password" type="password">
+                                <label for="stu-password">密码</label>
+                                <span data-error="学号或密码错误!" class="helper-text"></span>
+                            </div>
+                            <div class="row">
+                                <a class="col s6 waves-effect waves-light btn stu-login" onclick="stuLogin()">登录</a>
+                                <a class="col s6 waves-effect waves-light btn btn-flat stu-forget">忘记密码</a>
+                            </div>
+                        </div>
+                        <div id="tab2" class="col s12">
+                            <div class="input-field">
+                                <input id="tea-account" type="text">
+                                <label for="tea-account">工号</label>
+
+                            </div>
+                            <div class="input-field">
+                                <input id="tea-password" type="password">
+                                <label for="tea-password">密码</label>
+                                <span data-error="工号或密码错误!" class="helper-text"></span>
+                            </div>
+
+                            <div class="row">
+                                <a class="col s6 waves-effect waves-light btn tea-login" onclick="teaLogin()">登录</a>
+                                <a class="col s6 waves-effect waves-light btn btn-flat tea-forget">忘记密码</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="stu-portal" class="sprite scale-transition scale-out">
+            <div class="sidenav sidenav-fixed grey lighten-3">
+                <h4 class='center teal-text'>教务管理系统</h4>
+                <h6 v-if="student" class='center stu-sno teal-text'>{{ student.sno }}</h6>
+                <h6 v-if="student" class='center stu-name teal-text'>{{ student.name }}</h6>
+                <div class="section"></div>
+                <div class="collection">
+                    <a href="#!" class="collection-item" onclick="pageShow('stu-information')">学籍信息</a>
+                    <a href="#!" class="collection-item" onclick="pageShow('stu-lesson')">我的课程</a>
+                    <a href="#!" class="collection-item" onclick="pageShow('stu-ch-password')">修改密码</a>
+                    <div class="section"></div>
+                    <div class="section"></div>
+                    <div class="section"></div>
+                    <a href="#!" class="collection-item" onclick="logOut()">退出登录</a>
+                </div>
+
+            </div>
+
+            <main>
+                <div id="stu-information" class="sprite container mycontainer scale-transition scale-out">
+                    <div class="row">
+                        <div v-if="student" class="col s12 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <span class="card-title teal-text">学籍信息</span>
+                                <ul class="collection">
+                                    <li class="collection-item">
+                                        <span class="mylabel">姓名</span>
+                                        <span class="mycontent stu-name">{{ student.name }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">学号</span>
+                                        <span class="mycontent stu-sno">{{ student.sno }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">性别</span>
+                                        <span class="mycontent stu-sex">{{ student.sex }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">班级</span>
+                                        <span class="mycontent stu-class">{{ student["class"] }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">学院</span>
+                                        <span class="mycontent stu-school">{{ student.school }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">入学时间</span>
+                                        <span class="mycontent stu-admission-date">{{ student.admission_date }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">出生日期</span>
+                                        <span class="mycontent stu-birthday">{{ student.birthday }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">民族</span>
+                                        <span class="mycontent stu-nation">{{ student.nation }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">联系方式</span>
+                                        <span class="mycontent stu-tel">{{ student.tel }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">余额</span>
+                                        <span class="mycontent stu-tel">{{ student.stu_bal }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="stu-lesson" class="sprite container mycontainer scale-transition scale-out">
+                    <div class="row">
+                        <div v-if="mylessons" class="col s6 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <span class="card-title teal-text">已选课程</span>
+                                <ul class="collection">
+                                    <li v-for="lesson in mylessons" class="collection-item">
+                                        <span class="lesson-name ">{{ lesson.name }}</span>
+                                        <span class="lesson-score teal-text">{{ lesson.score }}</span>
+                                        <button v-on:click="dropLesson(lesson)" class="mybtn right waves-effect waves-light btn-small red lighten-1">退课</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col s5 offset-s1 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <span class="card-title teal-text">可选课程</span>
+                                <ul class="collection">
+                                    <li v-for="lesson in alllessons" v-if="!choosed(lesson)" class="collection-item">
+                                        <span class="lesson-name ">{{ lesson.name }}</span>
+                                        <button v-on:click="attendLesson(lesson)" class="mybtn right waves-effect waves-light btn-small lighten-1">选课</button>
+                                    </li>
+                                </ul>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="stu-ch-password" class="sprite container mycontainer scale-transition scale-out">
+                    <div class="row">
+                        <div v-if="student" class="col s12 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <span class="card-title teal-text">修改密码</span>
+                                <div class="row">
+                                    <form class="col s6 offset-s3">
+                                        <div class="input-field">
+                                            <input type="password" id="stu-ch-password1" oninput="checkStuPasswords()">
+                                            <label for="ch-password1">新密码</label>
+                                        </div>
+                                        <div class="input-field">
+                                            <input type="password" id="stu-ch-password2" oninput="checkStuPasswords()">
+                                            <label for="ch-password2">确认密码</label>
+                                            <span data-error="输入不一致!" data-success="修改成功" class="helper-text"></span>
+                                        </div>
+                                        <button class="btn teal" onclick="stuChPassword()">确认修改</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="tea-portal" class="sprite scale-transition scale-out">
+            <div class="sidenav sidenav-fixed grey lighten-3">
+                <h4 class='center teal-text'>教务管理系统</h4>
+                <h6 v-if="teacher" class='center tea-sno teal-text'>{{ teacher.tno }}</h6>
+                <h6 v-if="teacher" class='center tea-name teal-text'>{{ teacher.name }}</h6>
+                <div class="section"></div>
+                <div class="collection">
+                    <a href="#!" class="collection-item" onclick="pageShow('tea-information')">教师信息</a>
+                    <a href="#!" class="collection-item" onclick="pageShow('tea-lesson')">我的课程</a>
+                    <a href="#!" class="collection-item" onclick="pageShow('tea-ch-password')">修改密码</a>
+                    <div class="section"></div>
+                    <div class="section"></div>
+                    <div class="section"></div>
+                    <a href="#!" class="collection-item" onclick="logOut()">退出登录</a>
+                </div>
+            </div>
+
+            <main>
+                <div id="add-lesson" class="modal">
+                    <div class="modal-content">
+                        <h5 class="teal-text">请输入新课程信息</h5>
+                        <div class="input-field">
+                            <input type="text" id="al-no">
+                            <label for="al-no">课程编号</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" id="al-name">
+                            <label for="al-name">名字</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="text" id="al-type">
+                            <label for="al-type">类型</label>
+                        </div>
+                        <div class="input-field">
+                            <input type="number" id="al-credit">
+                            <label for="al-credit">学分</label>
+                        </div>
+                        <a href="#!" class="modal-close waves-effect waves-green btn" onclick="addLesson()">添加课程</a>
+                    </div>
+                </div>
+                <div id="tea-information" class="sprite container mycontainer scale-transition scale-out">
+                    <div class="row">
+                        <div v-if="teacher" class="col s12 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <span class="card-title teal-text">教师信息</span>
+                                <ul class="collection">
+                                    <li class="collection-item">
+                                        <span class="mylabel">姓名</span>
+                                        <span class="mycontent tea-name">{{ teacher.name }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">工号</span>
+                                        <span class="mycontent tea-tno">{{ teacher.tno }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">职称</span>
+                                        <span class="mycontent tea-title">{{ teacher.title }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">入学时间</span>
+                                        <span class="mycontent tea-admission-date">{{ teacher.admission_date }}</span>
+                                    </li>
+                                    <li class="collection-item">
+                                        <span class="mylabel">余额</span>
+                                        <span class="mycontent tea-title">{{ teacher.tea_bal }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tea-lesson" class="sprite container mycontainer scale-transition scale-out">
+                    <div class="row">
+                        <div v-if="tealessons" class="col s10 offset-s1 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <ul class="col s12 tabs">
+                                    <li v-for="lesson in tealessons" class="tab col s3">
+                                        <a :href="'#'+lesson.lesson_no" @click="getLessonStudent(lesson)">{{ lesson.name }}</a>
+                                    </li>
+                                </ul>
+                                <div v-if="lessonstudents">
+                                    <div v-if="lessonstudents[0] && (lesson.lesson_no === lessonstudents[0].lesson_no)" v-for="lesson in tealessons" :id="lesson.lesson_no"
+                                        class="col s12">
+                                        <h5 class="text-teal">{{lesson.name}}学生</h5>
+                                        <div class="collection">
+                                            <a v-for="student in lessonstudents" href="#!" class="collection-item t-s">
+                                                <span class="t-s-name">{{student.name}}</span>
+                                                <span class="t-s-score">{{student.score}}</span>
+                                                <button class="t-s-btn mybtn btn teal right" @click="setScore(student, toModifyScore)">修改</button>
+                                                <input class="t-s-input right" type="number" v-model="toModifyScore">
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="section"></div>
+                                <div class="section"></div>
+                                <div class="section"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#add-lesson" class="btn-floating btn-large waves-effect waves-light yellow modal-trigger">
+                        <i class="material-icons">add</i>
+                    </a>
+                </div>
+
+                <div id="tea-ch-password" class="sprite container mycontainer scale-transition scale-out">
+                    <div class="row">
+                        <div v-if="teacher" class="col s12 card grey lighten-4 z-depth-4">
+                            <div class="card-content">
+                                <span class="card-title teal-text">修改密码</span>
+                                <div class="row">
+                                    <form class="col s6 offset-s3">
+                                        <div class="input-field">
+                                            <input type="password" id="tea-ch-password1" oninput="checkTeaPasswords()">
+                                            <label for="ch-password1">新密码</label>
+                                        </div>
+                                        <div class="input-field">
+                                            <input type="password" id="tea-ch-password2" oninput="checkTeaPasswords()">
+                                            <label for="ch-password2">确认密码</label>
+                                            <span data-error="输入不一致!" data-success="修改成功" class="helper-text"></span>
+                                        </div>
+                                        <button class="btn teal" onclick="teaChPassword()">确认修改</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script src="js/vue.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.tabs').tabs();
+            $('.sidenav').sidenav();
+            hideAll();
+            $('#login-box').removeClass('scale-out').show();
+            $('.modal').modal();
+        });
+
+        let nowShow;
+
+        function hideAll() {
+            $('.sprite').hide();
+        }
+
+        function animate(prev, next) {
+            $("#" + prev).addClass('scale-out').delay(500).fadeOut(0);
+            $('#' + next).delay(500).fadeIn(0).removeClass('scale-out');
+        }
+
+        function pageShow(next) {
+            if (!nowShow) {
+                animate(next, next);
+            } else {
+                animate(nowShow, next);
+            }
+            nowShow = next;
+        }
+
+        function logOut() {
+            app.sno = null;
+            app.student = null;
+            app.tno = null;
+            app.teacher = null;
+            app.mylessons = null;
+            app.alllessons = null;
+            app.tealessons = null,
+                app.lessonstudents = null
+            hideAll();
+            $('#login-box').removeClass('scale-out').show();
+        }
+
+        function stuLogin() {
+            $('#stu-password').removeClass('invalid');
+            let account = $("#stu-account").val();
+            let password = $('#stu-password').val();
+            let type = "student";
+            fetch('/validate', {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        account: account,
+                        password: password,
+                        type: type
+                    })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        app.sno = account;
+                        fetchStudentData();
+                        fetchStudentLessonData();
+                        animate('login-box', 'stu-portal');
+                    } else {
+                        $('#stu-password').addClass('invalid');
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
+        function teaLogin() {
+            $('#tea-password').removeClass('invalid');
+            let account = $("#tea-account").val();
+            let password = $("#tea-password").val();
+            let type = "teacher";
+            fetch('/validate', {
+                    method: "POST",
+                    headers: {
+                        'content-type': "application/json"
+                    },
+                    body: JSON.stringify({
+                        account: account,
+                        password: password,
+                        type: type
+                    })
+                })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        app.tno = account;
+                        fetchTeacherData();
+                        fetchTeacherLessonData();
+                        animate('login-box', 'tea-portal');
+                    } else {
+                        $('#tea-password').addClass('invalid');
+                    }
+                })
+                .catch(err => console.log(err));
+        }
+
+        function stuChPassword() {
+            let pass2 = document.getElementById('stu-ch-password2');
+            if (pass2.checkValidity()) {
+                let url = new URL(window.location.origin + '/student/password'),
+                    params = {
+                        sno: app.sno,
+                        password: pass2.value
+                    };
+                Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                fetch(url).then(res => res.json())
+                    .then(res => res.success ? $('#stu-ch-password2').addClass('valid') : console.log("修改密码错误!"))
+                    .catch(err => console.log("修改密码错误"));
+            }
+        }
+
+        function teaChPassword() {
+            let pass2 = document.getElementById('tea-ch-password2');
+            if (pass2.checkValidity()) {
+                let url = new URL(window.location.origin + '/teacher/password'),
+                    params = {
+                        tno: app.tno,
+                        password: pass2.value
+                    };
+                Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                fetch(url).then(res => res.json())
+                    .then(res => res.success ? $('#tea-ch-password2').addClass('valid') : console.log("修改密码错误!"))
+                    .catch(err => console.log("修改密码错误"));
+            }
+        }
+
+        var app = new Vue({
+            el: "#app",
+            data: {
+                sno: null,
+                tno: null,
+                student: null,
+                mylessons: null,
+                alllessons: null,
+                teacher: null,
+                tealessons: null,
+                lessonstudents: null,
+                toModifyScore: 0,
+                first: true
+            },
+
+            methods: {
+                choosed: function (lesson) {
+                    for (l of this.mylessons) {
+                        if (lesson.lesson_no === l.lesson_no)
+                            return true;
+                    }
+                    return false;
+                },
+
+                attendLesson: function (lesson) {
+                    console.log(lesson);
+                    fetch('/student/lesson', {
+                            body: JSON.stringify({
+                                account: this.student.sno,
+                                lesson_no: lesson.lesson_no
+                            }),
+                            headers: {
+                                'content-type': 'application/json'
+                            },
+                            method: "POST"
+                        }).then(res => res.json())
+                        .then(res => res.success ? fetchStudentLessonData() : console.log(
+                            'attend lesson error!'))
+                        .catch(err => console.log("attend lesson error!"));
+                },
+
+                dropLesson: function (lesson) {
+                    let url = new URL(window.location.origin + '/student/lesson'),
+                        params = {
+                            account: this.student.sno,
+                            lesson_no: lesson.lesson_no
+                        };
+                    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                    fetch(url, {
+                            method: "DELETE"
+                        })
+                        .then(res => res.json())
+                        .then(res => res.success ? fetchStudentLessonData() : console.log(
+                            'drop lesson error!'))
+                        .catch(err => console.log('drop lesson error!'));
+                },
+
+                getLessonStudent: function (lesson) {
+                    let url = new URL(window.location.origin + '/lesson/student'),
+                        params = {
+                            lesson_no: lesson.lesson_no
+                        };
+                    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                    fetch(url).then(res => res.json())
+                        .then(res => {
+                            this.lessonstudents = res.data
+                            if (this.first) {
+                                $('.tabs').tabs();
+                                this.first = false;
+                            }
+                        })
+                        .catch(err => console.log("lesson student error!"));
+                },
+
+                setScore: function (studentlesson, score) {
+                    console.log(studentlesson, score);
+                    let url = new URL(window.location.origin + '/lesson/score'),
+                        params = {
+                            sno: studentlesson.sno,
+                            lesson_no: studentlesson.lesson_no,
+                            score: score
+                        };
+                    Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+                    fetch(url).then(res => res.json())
+                        .then(res => {
+                            if (res.success) {
+                                for (d of this.lessonstudents) {
+                                    if (d.sno === studentlesson.sno) {
+                                        d.score = score;
+                                    }
+                                }
+                            }
+                        })
+                        .catch(err => console.log("set score error!"));
+                }
+
+            }
+        });
+
+        function fillStudentSno() {
+            app.sno = $("#stu-account").val();
+        }
+
+        function fillTeacherSno() {
+            app.tno = $('#tea-account').val();
+        }
+
+        function fetchStudentData() {
+            let student_url = new URL(window.location.origin + '/student'),
+                params = {
+                    account: app.sno
+                };
+            Object.keys(params).forEach(key => student_url.searchParams.append(key, params[key]));
+            fetch(student_url).then(res => res.json())
+                .then(res => {
+                    app.student = res.data
+                })
+                .catch(err => console.log("get student error!"));
+        }
+
+        function fetchTeacherData() {
+            let teacher_url = new URL(window.location.origin + '/teacher'),
+                params = {
+                    account: app.tno
+                };
+            Object.keys(params).forEach(key => teacher_url.searchParams.append(key, params[key]));
+            fetch(teacher_url).then(res => res.json())
+                .then(res => {
+                    app.teacher = res.data
+                })
+                .catch(err => console.log("get teacher error!"));
+        }
+
+        function fetchStudentLessonData() {
+            fetch('/lesson').then(res => res.json())
+                .then(res => app.alllessons = res.data)
+                .catch(err => console.log("all lessons error!"));
+
+            let student_lesson_url = new URL(window.location.origin + '/student/lesson'),
+                params = {
+                    account: app.sno
+                };
+            Object.keys(params).forEach(key => student_lesson_url.searchParams.append(key, params[key]));
+            fetch(student_lesson_url).then(res => res.json())
+                .then(res => app.mylessons = res.data)
+                .catch(err => console.log("my lessons error!"));
+        }
+
+        function fetchTeacherLessonData() {
+            let teacher_lesson_url = new URL(window.location.origin + '/teacher/lesson'),
+                params = {
+                    account: app.tno
+                };
+            Object.keys(params).forEach(key => teacher_lesson_url.searchParams.append(key, params[key]));
+            fetch(teacher_lesson_url).then(res => res.json())
+                .then(res => {
+                    app.tealessons = res.data
+                })
+                .catch(err => console.log("teacher lesson error!"));
+        }
+
+        function getLessonStudent(lesson) {
+            let url = new URL(window.location.origin + '/lesson/student'),
+                params = {
+                    lesson_no: lesson.lesson_no
+                };
+            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+            fetch(url).then(res => res.json())
+                .then(res => app.lessonstudents = res.data)
+                .catch(err => console.log("lesson student error!"));
+        }
+
+        function setScore(studentlesson, score) {
+            let url = new URL(window.location.origin + '/lesson/score'),
+                params = {
+                    sno: studentlesson.sno,
+                    lesson_no: studentlesson.lesson_no,
+                    score: score
+                };
+            Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+            fetch(url).then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        for (d of app.lessonstudents) {
+                            if (d.sno === studentlesson.sno) {
+                                d.score = score;
+                            }
+                        }
+                    }
+                })
+                .catch(err => console.log("set score error!"));
+        }
+
+        function addLesson() {
+            let lesson_no = $('#al-no').val();
+            let name = $('#al-name').val();
+            let tno = app.tno;
+            let type = $('#al-type').val();
+            let credit = $('#al-credit').val();
+            fetch('/lesson', {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        lesson_no: lesson_no,
+                        name: name,
+                        tno: tno,
+                        type: type,
+                        credit: credit
+                    })
+                }).then(res => res.json())
+                .then(res => {
+                    res.success ? M.toast({
+                        html: "添加成功"
+                    }) : M.toast({
+                        html: "添加失败"
+                    })
+                    app.lessonstudents = null;
+                    fetchTeacherLessonData();
+                });
+        }
+
+        function checkStuPasswords() {
+            var pass1 = document.getElementById("stu-ch-password1");
+            var pass2 = document.getElementById("stu-ch-password2");
+
+            if (pass1.value !== pass2.value)
+                pass2.setCustomValidity("两次输入的密码不匹配");
+            else
+                pass2.setCustomValidity("");
+            if (!pass2.checkValidity()) {
+                $("#stu-ch-password2").addClass('invalid')
+            } else {
+                $("#stu-ch-password2").removeClass('invalid')
+            }
+        }
+
+        function checkTeaPasswords() {
+            var pass1 = document.getElementById("tea-ch-password1");
+            var pass2 = document.getElementById("tea-ch-password2");
+
+            if (pass1.value !== pass2.value)
+                pass2.setCustomValidity("两次输入的密码不匹配");
+            else
+                pass2.setCustomValidity("");
+            if (!pass2.checkValidity()) {
+                $("#tea-ch-password2").addClass('invalid')
+            } else {
+                $("#tea-ch-password2").removeClass('invalid')
+            }
+        }
+    </script>
+</body>
+
+</html>

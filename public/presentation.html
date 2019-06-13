@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>教务管理系统</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+      @font-face{
+          font-family: "FZZhunYuan";
+          src: url('/font/FZZY.ttf');
+      }
+      body { font-family: 'FZZhunYuan'; }
+      h1, h2, h3 {
+        font-family: 'FZZhunYuan';
+        font-weight: normal;
+      }
+      .img-fit img{
+          width: 100%;
+      }
+      .remark-slide-content {
+          background:#737373;
+          color:white;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+      
+      @page {
+  size: 908px 681px;
+  margin: 0;
+}
+
+@media print {
+  .remark-slide-scaler {
+    width: 100% !important;
+    height: 100% !important;
+    transform: scale(1) !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+}
+    </style>
+  </head>
+  <body>
+    <script src="https://remarkjs.com/downloads/remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({
+          radio: '16:9',
+          sourceUrl: 'slide.md',
+          highlightStyle: 'monokai',
+      });
+    </script>
+  </body>
+</html>
